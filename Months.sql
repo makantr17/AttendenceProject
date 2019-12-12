@@ -1,0 +1,12 @@
+CREATE TABLE IF NOT EXISTS `dashboard`.`April` (
+  `Id` INT NOT NULL AUTO_INCREMENT,
+  `Monday` VARCHAR(1000) NULL,
+  `Tuesday` VARCHAR(1000) NULL,
+  `Wednesday` VARCHAR(1000) NULL,
+  `Thursday` VARCHAR(1000) NULL,
+  `Friday` VARCHAR(1000) NULL,
+  `Saturday` VARCHAR(1000) NULL,
+  `Sunday` VARCHAR(1000) NULL,
+   PRIMARY KEY (`Id`))
+   
+ENGINE = InnoDB;

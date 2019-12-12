@@ -1,0 +1,2 @@
+INSERT INTO `Users` (`userId`,`firstName`, `lastName`, `email`, `phoneNumber`)
+VALUES (1, 'Mamady', 'Kante', 'makante17@alustudent.com', '787850457'), (2, 'Sory', 'Kante', 'makante17@alustudent.com', '787850457') ;

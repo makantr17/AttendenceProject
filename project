@@ -1,0 +1,146 @@
+Skip to content
+Search or jump to…
+
+Pull requests
+Issues
+Marketplace
+
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
+
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `dashboard` DEFAULT CHARACTER SET utf8 ;
+USE `dashboard` ;
+
+
+
+
+
+
+
+
+
+-- Table `dashboard`.`Courses`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `dashboard`.`Week1` (
+  `Id` INT NOT NULL AUTO_INCREMENT,
+  `Monday` VARCHAR(45) NULL,
+  `Tuesday` VARCHAR(45) NULL,
+  `Wednesday` VARCHAR(45) NULL,
+  `Thursday` VARCHAR(45) NULL,
+  `Friday` VARCHAR(45) NULL,
+  `Saturday` VARCHAR(45) NULL,
+  `Sunday` VARCHAR(45) NULL,
+
+   PRIMARY KEY (`Id`))
+   
+ENGINE = InnoDB;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- -----------------------------------------------------
+-- Table `dashboard`.`Users`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `dashboard`.`Users` (
+  `userId` INT NOT NULL AUTO_INCREMENT,
+  `firstName` VARCHAR(45) NOT NULL,
+  `lastName` VARCHAR(45) NOT NULL,
+  `email` VARCHAR(100) NOT NULL,
+  `phoneNumber` VARCHAR(45) NULL,
+  `profession` VARCHAR(45) NULL,
+  `isVerified` TINYINT NULL,
+  PRIMARY KEY (`userId`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Dashboard`.`Department`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `dashboard`.`Department` (
+  `departmentId` INT NOT NULL AUTO_INCREMENT,
+  `departmentName` VARCHAR(45) NULL,
+  `departmentEmail` VARCHAR(100) NULL,
+  `UserId` INT NULL,
+   PRIMARY KEY (`departmentId`),
+    FOREIGN KEY (`UserId`)
+    REFERENCES `dashboard`.`Users` (`UserId`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `dashboard`.`Courses`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `dashboard`.`Course` (
+  `courseId` INT NOT NULL AUTO_INCREMENT,
+  `courseName` VARCHAR(45) NULL,
+  `departmentId` INT NULL,
+   PRIMARY KEY (`courseId`),
+   FOREIGN KEY (`departmentId`)
+    REFERENCES `dashboard`.`Department` (`departmentId`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`Attendence`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `dashboard`.`Attendence` (
+  `attendenceId` INT NOT NULL AUTO_INCREMENT,
+  `link` VARCHAR(100) NOT NULL,
+  `courseId` INT NULL,
+  `userId` INT NULL,
+  `departmentId` INT NULL,
+  `Status` VARCHAR(45) NULL,
+  `numberAttended` INT NULL,
+  `dateCreated` INT NULL,
+  PRIMARY KEY (`attendenceId`),
+    FOREIGN KEY (`courseId`)
+    REFERENCES `dashboard`.`Course` (`courseId`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+    FOREIGN KEY (`userId`)
+    REFERENCES `dashboard`.`Users` (`userId`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION),
+    FOREIGN KEY (`departmentId`)
+    REFERENCES `dashboard`.`Department` (`departmentId`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+
+
+

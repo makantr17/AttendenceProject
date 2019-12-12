@@ -1,0 +1,532 @@
+Skip to content
+Search or jump to…
+
+Pull requests
+Issues
+Marketplace
+Explore
+ 
+@makantr17 
+We are having a problem billing your account. Please update your payment method or call your payment provider for details on why the transaction failed.
+You can contact support with any questions.
+Learn Git and GitHub without any code!
+Using the Hello World guide, you’ll start a branch, write comments, and open a pull request.
+
+
+0
+01makantr17/LAMARIA-HOTEL Private
+forked from Jonyango/LAMARIA-HOTEL
+ Code Pull requests 0 Projects 0 Wiki Security Insights Settings
+LAMARIA-HOTEL/database-create-scripts.sql
+@peterwilliam860 peterwilliam860 Store -> Create products & Merchants, List Products Orders, Checkout,…
+e85a69a on Apr 17
+496 lines (429 sloc)  15.6 KB
+ 
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
+
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `mydb` DEFAULT CHARACTER SET utf8 ;
+USE `mydb` ;
+
+-- -----------------------------------------------------
+-- Table `mydb`.`Users`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`Users` (
+  `userId` INT NOT NULL AUTO_INCREMENT,
+  `firstName` VARCHAR(45) NOT NULL,
+  `lastName` VARCHAR(45) NOT NULL,
+  `email` VARCHAR(100) NOT NULL,
+  `phoneNumber` VARCHAR(45) NULL,
+  `role` VARCHAR(45) NULL,
+  `isVerified` TINYINT NULL,
+  PRIMARY KEY (`userId`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`Customers`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`Customers` (
+  `customerId` INT NOT NULL AUTO_INCREMENT,
+  `firstName` VARCHAR(45) NOT NULL,
+  `lastName` VARCHAR(45) NOT NULL,
+  `email` VARCHAR(100) NULL,
+  `phoneNumber` VARCHAR(45) NULL,
+  `address` VARCHAR(100) NULL,
+  `shippingAddress` VARCHAR(100) NULL,
+  `isVerified` TINYINT NULL,
+  PRIMARY KEY (`customerId`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`Merchants`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`Merchants` (
+  `merchantId` INT NOT NULL AUTO_INCREMENT,
+  `companyName` VARCHAR(45) NULL,
+  `contactFirstName` VARCHAR(45) NULL,
+  `contactLastName` VARCHAR(45) NULL,
+  `contactTitle` VARCHAR(45) NULL,
+  `email` VARCHAR(100) NULL,
+  `phoneNumber` VARCHAR(45) NULL,
+  `address` VARCHAR(100) NULL,
+  `customerId` INT NULL,
+  PRIMARY KEY (`merchantId`),
+  CONSTRAINT `fk_Merchants_Customers1`
+    FOREIGN KEY (`customerId`)
+    REFERENCES `mydb`.`Customers` (`customerId`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+CREATE INDEX `fk_Merchants_Customers4_idx` ON `mydb`.`Merchants` (`customerId` ASC);
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`Categories`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`Categories` (
+  `categoryId` INT NOT NULL AUTO_INCREMENT,
+  `categoryName` VARCHAR(45) NULL,
+  `description` VARCHAR(100) NULL,
+  `picture` VARCHAR(100) NULL,
+  `isActive` TINYINT NULL,
+  PRIMARY KEY (`categoryId`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`Products`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`Products` (
+  `productId` INT NOT NULL AUTO_INCREMENT,
+  `productName` VARCHAR(45) NOT NULL,
+  `productDesc` VARCHAR(100) NULL,
+  `productImage` VARCHAR(100) NULL,
+  `supplierId` INT NULL,
+  `categoryId` INT NULL,
+  `unitPrice` DOUBLE NULL,
+  `unitsInStock` INT NULL,
+  `unitsOnOrder` INT NULL,
+  `reorderLevel` INT NULL,
+  `quality` VARCHAR(45) NULL,
+  `size` VARCHAR(45) NULL,
+  `color` VARCHAR(45) NULL,
+  `isPublished` TINYINT NULL,
+  `dateCreated` INT NULL,
+  `shelfLife` INT NULL,
+  PRIMARY KEY (`productId`),
+  CONSTRAINT `fk_Products_Categories1`
+    FOREIGN KEY (`categoryId`)
+    REFERENCES `mydb`.`Categories` (`categoryId`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Products_Merchants1`
+    FOREIGN KEY (`supplierId`)
+    REFERENCES `mydb`.`Merchants` (`merchantId`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+CREATE INDEX `fk_Products_Categories2_idx` ON `mydb`.`Products` (`categoryId` ASC);
+
+CREATE INDEX `fk_Products_Merchants2_idx` ON `mydb`.`Products` (`supplierId` ASC);
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`Payment`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`Payment` (
+  `paymentId` INT NOT NULL AUTO_INCREMENT,
+  `paymentType` VARCHAR(45) NULL,
+  `isAllowed` TINYINT NULL,
+  PRIMARY KEY (`paymentId`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`Shippers`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`Shippers` (
+  `shipperId` INT NOT NULL AUTO_INCREMENT,
+  `companyName` VARCHAR(45) NULL,
+  `phoneNumber` VARCHAR(45) NULL,
+  PRIMARY KEY (`shipperId`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`Order`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`Order` (
+  `orderId` INT NOT NULL AUTO_INCREMENT,
+  `orderNo` VARCHAR(45) NULL,
+  `customerId` INT NULL,
+  `orderDate` INT NULL,
+  `paymentId` INT NULL,
+  `shipDate` INT NULL,
+  `shipperId` INT NULL,
+  `freight` VARCHAR(45) NULL,
+  `salesTax` DOUBLE NULL,
+  `transactionStatus` VARCHAR(45) NULL,
+  `fulfilled` TINYINT NULL,
+  `deleted` TINYINT NULL,
+  `paid` TINYINT NULL,
+  `paymentDate` INT NULL,
+  PRIMARY KEY (`orderId`),
+  CONSTRAINT `fk_Order_Shippers1`
+    FOREIGN KEY (`shipperId`)
+    REFERENCES `mydb`.`Shippers` (`shipperId`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Order_Customers1`
+    FOREIGN KEY (`customerId`)
+    REFERENCES `mydb`.`Customers` (`customerId`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Order_Payment1`
+    FOREIGN KEY (`paymentId`)
+    REFERENCES `mydb`.`Payment` (`paymentId`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+CREATE INDEX `fk_Order_Shippers1_idx` ON `mydb`.`Order` (`shipperId` ASC);
+
+CREATE INDEX `fk_Order_Customers1_idx` ON `mydb`.`Order` (`customerId` ASC);
+
+CREATE INDEX `fk_Order_Payment1_idx` ON `mydb`.`Order` (`paymentId` ASC);
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`OrderDetails`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`OrderDetails` (
+  `orderDetailsId` INT NOT NULL AUTO_INCREMENT,
+  `orderId` INT NULL,
+  `orderNo` VARCHAR(45) NULL,
+  `productId` INT NULL,
+  `unitPrice` DOUBLE NULL,
+  `quantity` INT NULL,
+  `discount` DOUBLE NULL,
+  `total` DOUBLE NULL,
+  `quality` VARCHAR(45) NULL,
+  `size` VARCHAR(45) NULL,
+  `color` VARCHAR(45) NULL,
+  `fulfilled` TINYINT NULL,
+  `shipDate` INT NULL,
+  `billDate` INT NULL,
+  PRIMARY KEY (`orderDetailsId`),
+  CONSTRAINT `fk_OrderDetails_Order1`
+    FOREIGN KEY (`orderId`)
+    REFERENCES `mydb`.`Order` (`orderId`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_OrderDetails_Products1`
+    FOREIGN KEY (`productId`)
+    REFERENCES `mydb`.`Products` (`productId`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+CREATE INDEX `fk_OrderDetails_Order1_idx` ON `mydb`.`OrderDetails` (`orderId` ASC);
+
+CREATE INDEX `fk_OrderDetails_Products1_idx` ON `mydb`.`OrderDetails` (`productId` ASC);
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`RoomType`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`RoomType` (
+  `roomTypeId` INT NOT NULL AUTO_INCREMENT,
+  `roomType` VARCHAR(45) NULL,
+  `description` VARCHAR(100) NULL,
+  `price` DOUBLE NULL,
+  `maxGuestNo` INT NULL,
+  PRIMARY KEY (`roomTypeId`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`Room`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`Room` (
+  `roomId` INT NOT NULL AUTO_INCREMENT,
+  `roomTypeId` INT NULL,
+  `roomNo` VARCHAR(45) NULL,
+  `roomStatus` VARCHAR(45) NULL,
+  `isActive` TINYINT NULL,
+  PRIMARY KEY (`roomId`),
+  CONSTRAINT `fk_Room_RoomType`
+    FOREIGN KEY (`roomTypeId`)
+    REFERENCES `mydb`.`RoomType` (`roomTypeId`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+CREATE INDEX `fk_Room_RoomType_idx` ON `mydb`.`Room` (`roomTypeId` ASC);
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`RoomReservation`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`RoomReservation` (
+  `roomReservationId` INT NOT NULL AUTO_INCREMENT,
+  `roomReservationNo` VARCHAR(45) NULL,
+  `customerId` INT NULL,
+  `roomId` INT NULL,
+  `reservationDate` INT NULL,
+  `numNights` INT NULL,
+  `numGuests` INT NULL,
+  `checkInDateTime` INT NULL,
+  `checkOutDateTime` INT NULL,
+  `checkedIn` TINYINT NULL,
+  `checkedOut` TINYINT NULL,
+  `cancellationDate` INT NULL,
+  `vat` DOUBLE NULL,
+  `totalPrice` DOUBLE NULL,
+  PRIMARY KEY (`roomReservationId`),
+  CONSTRAINT `fk_RoomReservation_Room1`
+    FOREIGN KEY (`roomId`)
+    REFERENCES `mydb`.`Room` (`roomId`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_RoomReservation_Customers1`
+    FOREIGN KEY (`customerId`)
+    REFERENCES `mydb`.`Customers` (`customerId`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_RoomReservation_Room2`
+    FOREIGN KEY (`roomId`)
+    REFERENCES `mydb`.`Room` (`roomId`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+CREATE INDEX `fk_RoomReservation_Room1_idx` ON `mydb`.`RoomReservation` (`roomId` ASC);
+
+CREATE INDEX `fk_RoomReservation_Customers1_idx` ON `mydb`.`RoomReservation` (`customerId` ASC);
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`Guest`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`Guest` (
+  `guestId` INT NOT NULL AUTO_INCREMENT,
+  `firstName` VARCHAR(45) NULL,
+  `lastName` VARCHAR(45) NULL,
+  `email` VARCHAR(100) NULL,
+  `phoneNumber` VARCHAR(45) NULL,
+  `address` VARCHAR(100) NULL,
+  PRIMARY KEY (`guestId`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`Guests`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`Guests` (
+  `guestsId` INT NOT NULL AUTO_INCREMENT,
+  `roomReservationId` INT NULL,
+  `roomReservationNo` VARCHAR(45) NULL,
+  `guestId` INT NULL,
+  PRIMARY KEY (`guestsId`),
+  CONSTRAINT `fk_Guests_RoomReservation1`
+    FOREIGN KEY (`roomReservationId`)
+    REFERENCES `mydb`.`RoomReservation` (`roomReservationId`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Guests_Guest1`
+    FOREIGN KEY (`guestId`)
+    REFERENCES `mydb`.`Guest` (`guestId`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+CREATE INDEX `fk_Guests_RoomReservation1_idx` ON `mydb`.`Guests` (`roomReservationId` ASC);
+
+CREATE INDEX `fk_Guests_Guest1_idx` ON `mydb`.`Guests` (`guestId` ASC);
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`Organiser`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`Organiser` (
+  `organiserId` INT NOT NULL AUTO_INCREMENT,
+  `organiserType` VARCHAR(45) NULL,
+  `userId` INT NULL,
+  `customerId` INT NULL,
+  `organiserName` VARCHAR(45) NULL,
+  `contactNo` VARCHAR(45) NULL,
+  `email` VARCHAR(100) NULL,
+  PRIMARY KEY (`organiserId`),
+  CONSTRAINT `fk_Organiser_Users1`
+    FOREIGN KEY (`userId`)
+    REFERENCES `mydb`.`Users` (`userId`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Organiser_Customers1`
+    FOREIGN KEY (`customerId`)
+    REFERENCES `mydb`.`Customers` (`customerId`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+CREATE INDEX `fk_Organiser_Users1_idx` ON `mydb`.`Organiser` (`userId` ASC);
+
+CREATE INDEX `fk_Organiser_Customers1_idx` ON `mydb`.`Organiser` (`customerId` ASC);
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`Event`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`Event` (
+  `eventId` INT NOT NULL AUTO_INCREMENT,
+  `eventName` VARCHAR(45) NULL,
+  `eventDescription` VARCHAR(100) NULL,
+  `eventVenue` VARCHAR(45) NULL,
+  `eventDate` INT NULL,
+  `eventTime` INT NULL,
+  `organiserId` INT NULL,
+  PRIMARY KEY (`eventId`),
+  CONSTRAINT `fk_Event_Organiser1`
+    FOREIGN KEY (`organiserId`)
+    REFERENCES `mydb`.`Organiser` (`organiserId`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+CREATE INDEX `fk_Event_Organiser1_idx` ON `mydb`.`Event` (`organiserId` ASC);
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`Participants`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`Participants` (
+  `participantId` INT NOT NULL AUTO_INCREMENT,
+  `eventId` INT NULL,
+  `participantName` VARCHAR(45) NULL,
+  `participantEmail` VARCHAR(100) NULL,
+  `participantContactNo` VARCHAR(45) NULL,
+  PRIMARY KEY (`participantId`),
+  CONSTRAINT `fk_Participants_Event1`
+    FOREIGN KEY (`eventId`)
+    REFERENCES `mydb`.`Event` (`eventId`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+CREATE INDEX `fk_Participants_Event1_idx` ON `mydb`.`Participants` (`eventId` ASC);
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`CustomerChats`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`CustomerChats` (
+  `customerChatsId` INT NOT NULL AUTO_INCREMENT,
+  `customerId` INT NULL,
+  `merchantId` INT NULL,
+  PRIMARY KEY (`customerChatsId`),
+  CONSTRAINT `fk_CustomerChats_Customers1`
+    FOREIGN KEY (`customerId`)
+    REFERENCES `mydb`.`Customers` (`customerId`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_CustomerChats_Merchants1`
+    FOREIGN KEY (`merchantId`)
+    REFERENCES `mydb`.`Merchants` (`merchantId`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+CREATE INDEX `fk_CustomerChats_Customers1_idx` ON `mydb`.`CustomerChats` (`customerId` ASC);
+
+CREATE INDEX `fk_CustomerChats_Merchants1_idx` ON `mydb`.`CustomerChats` (`merchantId` ASC);
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`Message`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`Message` (
+  `messageId` INT NOT NULL AUTO_INCREMENT,
+  `customerChatsId` INT NULL,
+  `dateSent` INT NULL,
+  `dateRead` INT NULL,
+  `messageSubject` VARCHAR(45) NULL,
+  `messageBody` VARCHAR(100) NULL,
+  `messageFrom` INT NULL,
+  `messageTo` INT NULL,
+  `markRead` TINYINT NULL,
+  `markReplied` TINYINT NULL,
+  `markDeleted` TINYINT NULL,
+  PRIMARY KEY (`messageId`),
+  CONSTRAINT `fk_Message_CustomerChats1`
+    FOREIGN KEY (`customerChatsId`)
+    REFERENCES `mydb`.`CustomerChats` (`customerChatsId`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+CREATE INDEX `fk_Message_CustomerChats1_idx` ON `mydb`.`Message` (`customerChatsId` ASC);
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`wishlist`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`wishlist` (
+  `wishlistId` INT NOT NULL AUTO_INCREMENT,
+  `customerId` INT NULL,
+  `ipAddress` VARCHAR(45) NULL,
+  `productId` INT NULL,
+  `unitPrice` DOUBLE NULL,
+  `quantity` INT NULL,
+  `discount` DOUBLE NULL,
+  `total` DOUBLE NULL,
+  `quality` VARCHAR(45) NULL,
+  `size` VARCHAR(45) NULL,
+  `dateAdded` INT NULL,
+  PRIMARY KEY (`wishlistId`),
+  CONSTRAINT `fk_wishlist_Customers1`
+    FOREIGN KEY (`customerId`)
+    REFERENCES `mydb`.`Customers` (`customerId`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_wishlist_Products1`
+    FOREIGN KEY (`productId`)
+    REFERENCES `mydb`.`Products` (`productId`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+CREATE INDEX `fk_wishlist_Customers1_idx` ON `mydb`.`wishlist` (`customerId` ASC);
+
+CREATE INDEX `fk_wishlist_Products1_idx` ON `mydb`.`wishlist` (`productId` ASC);
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+© 2019 GitHub, Inc.
+Terms
+Privacy
+Security
+Status
+Help
+Contact GitHub
+Pricing
+API
+Training
+Blog
+About
+
